@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.cqupt.sensor_ble">
+
+    <uses-permission android:name="android.permission.BLUETOOTH" />
+    <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
+
+    <application
+        android:allowBackup="true"
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
+        android:theme="@style/Theme.Timetodo">
+        <activity
+            android:name=".activity.WelcomeActivity"
+            android:configChanges="keyboardHidden|orientation|screenSize"
+            android:label="@string/app_name">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name=".activity.DeviceListActivity"
+            android:theme="@style/DialogLight" />
+        <activity
+            android:name=".activity.MainActivity"
+            android:label="@string/title_activity_welcome" />
+
+        <service
+            android:name=".activity.UartService"
+            android:enabled="true" />
+
+        <activity
+            android:name=".activity.SettingsActivity"
+            android:label="@string/title_activity_setting"
+            android:theme="@style/DialogLight" />
+        <activity
+            android:name=".activity.ChooseActivity"
+            android:label="@string/title_activity_choose"
+            android:theme="@style/DialogLight" />
+        <activity
+            android:name="com.cqupt.sensor_ble.Input"
+            android:label="@string/title_activity_input"
+            android:theme="@style/DialogLight" />
+        <activity
+            android:name=".activity.AboutActivity"
+            android:label="@string/title_activity_about_sl"
+            android:theme="@style/DialogLight"/>
+    </application>
+
+</manifest>

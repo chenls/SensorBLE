@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/light_black">
+
+    <TextView
+        android:id="@+id/animation"
+        android:layout_width="140dp"
+        android:layout_height="140dp"
+        android:layout_centerInParent="true"
+        android:background="@drawable/circle_shape" />
+
+    <TextView
+        android:id="@+id/tv_bluetooth"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="90dp"
+        android:drawableLeft="@mipmap/bluetooth"
+        android:gravity="center"
+        android:text="@string/bluetooth_close"
+        android:textColor="@color/white"
+        android:textSize="14sp"/>
+
+    <Button
+        android:id="@+id/connect_bluetooth"
+        android:layout_width="140dp"
+        android:layout_height="140dp"
+        android:layout_centerInParent="true"
+        android:background="@drawable/circle_shape"
+        android:gravity="center"
+        android:text="@string/connect_bluetooth"
+        android:textColor="@color/white"
+        android:textSize="18sp" />
+
+
+    <Button
+        android:id="@+id/about_smart_lock"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="30dp"
+        android:background="@drawable/button_shape"
+        android:paddingBottom="9dp"
+        android:paddingLeft="20dp"
+        android:paddingRight="20dp"
+        android:paddingTop="9dp"
+        android:text="@string/about_BLE"
+        android:textColor="@color/white"
+        android:textSize="14sp" />
+</RelativeLayout>
