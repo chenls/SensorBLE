@@ -18,7 +18,7 @@
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="90dp"
-        android:drawableLeft="@mipmap/bluetooth"
+        android:drawableStart="@mipmap/bluetooth"
         android:gravity="center"
         android:text="@string/bluetooth_close"
         android:textColor="@color/white"

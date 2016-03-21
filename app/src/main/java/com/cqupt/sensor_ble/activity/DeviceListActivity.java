@@ -1,5 +1,6 @@
 package com.cqupt.sensor_ble.activity;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
@@ -41,11 +42,11 @@ public class DeviceListActivity extends Activity {
     private BluetoothAdapter mBluetoothAdapter;
     private SharedPreferences sharedPreferences;
     private TextView mEmptyList;
-    public static final String TAG = "myLog";
+    private static final String TAG = "myLog";
 
-    List<BluetoothDevice> deviceList;
+    private List<BluetoothDevice> deviceList;
     private DeviceAdapter deviceAdapter;
-    Map<String, Integer> devRssiValues;
+    private Map<String, Integer> devRssiValues;
     private static final long SCAN_PERIOD = 10000; //10 seconds
     private Handler mHandler;
     private boolean mScanning;
@@ -90,7 +91,7 @@ public class DeviceListActivity extends Activity {
             @Override
             public void onClick(View v) {
 
-                if (mScanning == false) {
+                if (!mScanning) {
                     scanLeDevice(true);
                     mEmptyList.setText(R.string.scanning);
                 } else {
@@ -100,10 +101,10 @@ public class DeviceListActivity extends Activity {
             }
         });
         try {
-            //TODO  myDate 更新
             sharedPreferences = this.getSharedPreferences("myDate",
                     Context.MODE_PRIVATE);
         } catch (Exception e) {
+            e.printStackTrace();
         }
 
     }
@@ -111,9 +112,9 @@ public class DeviceListActivity extends Activity {
     private void populateList() {
         /* Initialize device list container */
         Log.d(TAG, "populateList");
-        deviceList = new ArrayList<BluetoothDevice>();
+        deviceList = new ArrayList<>();
         deviceAdapter = new DeviceAdapter(this, deviceList);
-        devRssiValues = new HashMap<String, Integer>();
+        devRssiValues = new HashMap<>();
 
         ListView newDevicesListView = (ListView) findViewById(R.id.new_devices);
         newDevicesListView.setAdapter(deviceAdapter);
@@ -131,6 +132,7 @@ public class DeviceListActivity extends Activity {
                 @Override
                 public void run() {
                     mScanning = false;
+                    //noinspection deprecation
                     mBluetoothAdapter.stopLeScan(mLeScanCallback);
                     cancelButton.setText(R.string.scan);
                     mEmptyList.setText(R.string.no_device);
@@ -138,16 +140,18 @@ public class DeviceListActivity extends Activity {
             }, SCAN_PERIOD);
 
             mScanning = true;
+            //noinspection deprecation
             mBluetoothAdapter.startLeScan(mLeScanCallback);
             cancelButton.setText(R.string.cancel);
         } else {
             mScanning = false;
+            //noinspection deprecation
             mBluetoothAdapter.stopLeScan(mLeScanCallback);
             cancelButton.setText(R.string.scan);
         }
     }
 
-    private BluetoothAdapter.LeScanCallback mLeScanCallback =
+    private final BluetoothAdapter.LeScanCallback mLeScanCallback =
             new BluetoothAdapter.LeScanCallback() {
 
                 @Override
@@ -200,6 +204,7 @@ public class DeviceListActivity extends Activity {
     @Override
     public void onStop() {
         super.onStop();
+        //noinspection deprecation
         mBluetoothAdapter.stopLeScan(mLeScanCallback);
 
     }
@@ -207,6 +212,7 @@ public class DeviceListActivity extends Activity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        //noinspection deprecation
         mBluetoothAdapter.stopLeScan(mLeScanCallback);
 
     }
@@ -214,10 +220,11 @@ public class DeviceListActivity extends Activity {
     /**
      * 选择设备后返回。
      */
-    private OnItemClickListener mDeviceClickListener = new OnItemClickListener() {
+    private final OnItemClickListener mDeviceClickListener = new OnItemClickListener() {
 
         @Override
         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+            //noinspection deprecation
             mBluetoothAdapter.stopLeScan(mLeScanCallback);
 
             SharedPreferences.Editor editor = sharedPreferences.edit();
@@ -258,12 +265,10 @@ public class DeviceListActivity extends Activity {
     }
 
     class DeviceAdapter extends BaseAdapter {
-        Context context;
-        List<BluetoothDevice> devices;
-        LayoutInflater inflater;
+        final List<BluetoothDevice> devices;
+        final LayoutInflater inflater;
 
         public DeviceAdapter(Context context, List<BluetoothDevice> devices) {
-            this.context = context;
             inflater = LayoutInflater.from(context);
             this.devices = devices;
         }
@@ -283,6 +288,7 @@ public class DeviceListActivity extends Activity {
             return position;
         }
 
+        @SuppressLint("InflateParams")
         @Override
         public View getView(int position, View convertView, ViewGroup parent) {
             ViewGroup vg;
@@ -302,7 +308,7 @@ public class DeviceListActivity extends Activity {
             tv_rssi.setVisibility(View.VISIBLE);
             byte rssiValue = (byte) devRssiValues.get(device.getAddress()).intValue();
             if (rssiValue != 0) {
-                tv_rssi.setText("Rssi = " + String.valueOf(rssiValue));
+                tv_rssi.setText(getString(R.string.Rssi, rssiValue));
             }
 
             tv_name.setText(device.getName());

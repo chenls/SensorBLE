@@ -15,6 +15,7 @@
 -->
 
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
     android:background="#ffffff"
@@ -33,16 +34,18 @@
             android:gravity="center"
             android:text="@string/select_device"
             android:textColor="#fff"
-            android:textSize="20sp" />
+            android:textSize="20sp"
+            tools:ignore="RelativeOverlap" />
 
         <ImageView
             android:id="@+id/about"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignParentRight="true"
-            android:layout_marginRight="8dp"
+            android:layout_alignParentEnd="true"
             android:layout_centerVertical="true"
-            android:src="@android:drawable/ic_menu_info_details" />
+            android:layout_marginEnd="8dp"
+            android:src="@android:drawable/ic_menu_info_details"
+            tools:ignore="ContentDescription" />
     </RelativeLayout>
 
     <LinearLayout
@@ -53,7 +56,7 @@
         <ListView
             android:id="@+id/new_devices"
             android:layout_width="fill_parent"
-            android:layout_height="fill_parent"
+            android:layout_height="0dp"
             android:layout_weight="2"
             android:cacheColorHint="#00000000"
             android:stackFromBottom="true" />
@@ -64,9 +67,9 @@
             android:layout_height="wrap_content"
             android:background="@color/blue"
             android:padding="13dp"
-            android:textSize="18sp"
             android:text="@string/scanning"
-            android:textColor="@color/white" />
+            android:textColor="@color/white"
+            android:textSize="18sp" />
 
         <Button
             android:id="@+id/btn_cancel"

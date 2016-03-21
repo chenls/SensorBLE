@@ -17,7 +17,6 @@ import com.cqupt.sensor_ble.R;
 public class SettingsActivity extends Activity {
     private static final int REQUEST_AUTO_CONNECT = 2;
     public static final String AUTO_CONNECT = "isAutoConnect";
-    public static final String CHANGE_NAME = "changeName";
     private TextView autoConnect;
     private TextView isAutoConnect;
     private SharedPreferences sharedPreferences;
@@ -35,7 +34,6 @@ public class SettingsActivity extends Activity {
         isAutoConnect = (TextView) findViewById(R.id.isAutoConnect);
         autoConnect.setOnClickListener(new OnClickListener());
         try {
-            //TODO  myDate 更新
             sharedPreferences = this.getSharedPreferences("myDate",
                     Context.MODE_PRIVATE);
         } catch (Exception e) {
@@ -55,7 +53,7 @@ public class SettingsActivity extends Activity {
 
     }
 
-    public class OnClickListener implements View.OnClickListener {
+    private class OnClickListener implements View.OnClickListener {
 
         @Override
         public void onClick(View v) {

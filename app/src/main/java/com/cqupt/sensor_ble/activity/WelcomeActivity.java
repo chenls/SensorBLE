@@ -10,7 +10,6 @@ import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
-import android.util.Log;
 import android.view.View;
 import android.view.WindowManager;
 import android.view.animation.Animation;
@@ -18,13 +17,12 @@ import android.view.animation.AnimationUtils;
 import android.widget.Button;
 import android.widget.TextView;
 
-import com.cqupt.sensor_ble.utils.CommonTools;
 import com.cqupt.sensor_ble.R;
+import com.cqupt.sensor_ble.utils.CommonTools;
 
 public class WelcomeActivity extends Activity {
-    private static final String TAG = "SmartLock";
     public static final String M2W = "m2w";
-    private int TIME = 2000;
+    private final int TIME = 2000;
     private TextView animation, tv_bluetooth;
     private Animation myAnimation_Scale;
     private BluetoothAdapter mBtAdapter = null;
@@ -39,7 +37,6 @@ public class WelcomeActivity extends Activity {
 
     @Override
     protected void onResume() {
-        Log.i(TAG, "wel_onResume");
         super.onResume();
 
         if (!isFirstOpen) {
@@ -54,7 +51,6 @@ public class WelcomeActivity extends Activity {
             isBTOpened = true;
         }
         if (isOpen) {
-            Log.d(TAG, "蓝牙已打开");
             tv_bluetooth.setText(R.string.bluetooth_open);
             if (is_auto_connect) {
                 final BluetoothManager bluetoothManager =
@@ -84,7 +80,7 @@ public class WelcomeActivity extends Activity {
         }
     }
 
-    private BluetoothAdapter.LeScanCallback mLeScanCallback =
+    private final BluetoothAdapter.LeScanCallback mLeScanCallback =
             new BluetoothAdapter.LeScanCallback() {
                 @Override
                 public void onLeScan(final BluetoothDevice device, final int rssi, byte[] scanRecord) {
@@ -152,7 +148,6 @@ public class WelcomeActivity extends Activity {
             }
         });
         try {
-            //TODO  myDate 更新
             sharedPreferences = this.getSharedPreferences("myDate",
                     Context.MODE_PRIVATE);
         } catch (Exception e) {
@@ -168,8 +163,8 @@ public class WelcomeActivity extends Activity {
         }
     }
 
-    Handler handler = new Handler();
-    Runnable runnable = new Runnable() {
+    private final Handler handler = new Handler();
+    private final Runnable runnable = new Runnable() {
         @Override
         public void run() {
             // handler自带方法实现定时器
@@ -193,7 +188,6 @@ public class WelcomeActivity extends Activity {
     @Override
     protected void onStop() {
         super.onStop();
-        Log.d(TAG, "Wel_onStop()");
         finish();
     }
 }

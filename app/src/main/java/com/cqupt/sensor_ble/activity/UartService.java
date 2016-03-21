@@ -42,15 +42,14 @@ import java.util.UUID;
  */
 public class UartService extends Service {
     private final static String TAG = "SmartLock";
-    public static final String CHAR1_DATA = "char1";
-    public static final String WRITE_STATUS = "writeStatus";
+    private static final String CHAR1_DATA = "char1";
+    private static final String WRITE_STATUS = "writeStatus";
     public static final String RSSI = "rssi";
     public static final String RSSI_STATUS = "rssiStatus";
     private BluetoothManager mBluetoothManager;
     private BluetoothAdapter mBluetoothAdapter;
     private String mBluetoothDeviceAddress;
     private BluetoothGatt mBluetoothGatt;
-    private int mConnectionState = STATE_DISCONNECTED;
     private static final int STATE_DISCONNECTED = 0;
     private static final int STATE_CONNECTING = 1;
     private static final int STATE_CONNECTED = 2;
@@ -68,17 +67,13 @@ public class UartService extends Service {
     public final static String DEVICE_DOES_NOT_SUPPORT_UART =
             "com.cqupt.sensor_ble.DEVICE_DOES_NOT_SUPPORT_UART";
     public final static String EXTRAS_DEVICE_BATTERY = "com.cqupt.sensor_ble.EXTRAS_DEVICE_BATTERY";
-    public static final UUID TX_POWER_UUID = UUID.fromString("00001804-0000-1000-8000-00805f9b34fb");
-    public static final UUID TX_POWER_LEVEL_UUID = UUID.fromString("00002a07-0000-1000-8000-00805f9b34fb");
-    public static final UUID FIRMWARE_REVISON_UUID = UUID.fromString("00002a26-0000-1000-8000-00805f9b34fb");
-    public static final UUID DIS_UUID = UUID.fromString("0000180a-0000-1000-8000-00805f9b34fb");
     //服务
-    public static final UUID RX_SERVICE_UUID = UUID.fromString("0000fff0-0000-1000-8000-00805f9b34fb");
+    private static final UUID RX_SERVICE_UUID = UUID.fromString("0000fff0-0000-1000-8000-00805f9b34fb");
     //注意，这里的RX对于CC254x来说的接收，也就是0xfff1
-    public static final UUID RX_CHAR_UUID = UUID.fromString("0000fff1-0000-1000-8000-00805f9b34fb");
+    private static final UUID RX_CHAR_UUID = UUID.fromString("0000fff1-0000-1000-8000-00805f9b34fb");
     //注意，这里的TX对于CC254x来说的发送，也就是0xfff4，notify方式。
-    public static final UUID TX_CHAR_UUID = UUID.fromString("0000fff4-0000-1000-8000-00805f9b34fb");
-    public static final UUID CCCD = UUID.fromString("00002902-0000-1000-8000-00805f9b34fb");
+    private static final UUID TX_CHAR_UUID = UUID.fromString("0000fff4-0000-1000-8000-00805f9b34fb");
+    private static final UUID CCCD = UUID.fromString("00002902-0000-1000-8000-00805f9b34fb");
     //电池服务
     public static final UUID Battery_Service_UUID = UUID.fromString("0000180F-0000-1000-8000-00805f9b34fb");
     public static final UUID Battery_Level_UUID = UUID.fromString("00002a19-0000-1000-8000-00805f9b34fb");
@@ -98,7 +93,6 @@ public class UartService extends Service {
              */
             if (newState == BluetoothProfile.STATE_CONNECTED) {
                 intentAction = ACTION_GATT_CONNECTED;
-                mConnectionState = STATE_CONNECTED;
                 broadcastUpdate(intentAction);
                 Log.i(TAG, "Connected to GATT server.");
                 // Attempts to discover services after successful connection.
@@ -110,7 +104,6 @@ public class UartService extends Service {
                  */
             } else if (newState == BluetoothProfile.STATE_DISCONNECTED) {
                 intentAction = ACTION_GATT_DISCONNECTED;
-                mConnectionState = STATE_DISCONNECTED;
                 Log.i(TAG, "Disconnected from GATT server.");
                 broadcastUpdate(intentAction);
             }
@@ -136,7 +129,6 @@ public class UartService extends Service {
         @Override
         public void onReadRemoteRssi(BluetoothGatt gatt, int rssi, int status) {
             super.onReadRemoteRssi(gatt, rssi, status);
-            Log.e(TAG, "rssi" + rssi + "status" + status);
             final Intent intent = new Intent(ACTION_DATA_AVAILABLE);
             intent.putExtra(RSSI, "" + rssi);
             intent.putExtra(RSSI_STATUS, "" + status);
@@ -199,19 +191,28 @@ public class UartService extends Service {
     /**
      * 发送一个带数据的广播
      *
-     * @param action action
+     * @param action         action
      * @param characteristic characteristic
      */
     private void broadcastUpdate(final String action,
                                  final BluetoothGattCharacteristic characteristic) {
         final Intent intent = new Intent(action);
 
-        // This is special handling for the Heart Rate Measurement profile.  Data parsing is
-        // carried out as per profile specifications:
-        // http://developer.bluetooth.org/gatt/characteristics/Pages/CharacteristicViewer.aspx?u=org.bluetooth.characteristic.heart_rate_measurement.xml
         if (TX_CHAR_UUID.equals(characteristic.getUuid())) {
-            intent.putExtra(EXTRA_DATA, "" + characteristic.getIntValue(BluetoothGattCharacteristic.FORMAT_UINT8, 0));
-
+            final byte[] byte_data = characteristic.getValue();
+            if (byte_data != null && byte_data.length > 0) {
+                final StringBuilder stringBuilder = new StringBuilder(byte_data.length);
+                for (byte byteChar : byte_data) {
+                    stringBuilder.append(String.format("%X ", byteChar));
+                }
+                String s = stringBuilder.toString();
+                String[] string_array = s.split(" ");
+                int[] int_array = new int[3];
+                for (int i = 0; i < 3; i++) {
+                    int_array[i] = Integer.parseInt(string_array[i], 16);
+                }
+                intent.putExtra(EXTRA_DATA, int_array);
+            }
         } else if (RX_CHAR_UUID.equals(characteristic.getUuid())) {
             intent.putExtra(CHAR1_DATA, "" + characteristic.getIntValue(BluetoothGattCharacteristic.FORMAT_UINT8, 0));
 
@@ -288,10 +289,7 @@ public class UartService extends Service {
      */
     public boolean myReadRemoteRssi() {
 
-
-        if (mBluetoothGatt.readRemoteRssi())
-            return true;
-        return false;
+        return mBluetoothGatt.readRemoteRssi();
     }
 
     /**
@@ -314,12 +312,7 @@ public class UartService extends Service {
         if (mBluetoothDeviceAddress != null && address.equals(mBluetoothDeviceAddress)
                 && mBluetoothGatt != null) {
             Log.d(TAG, "Trying to use an existing mBluetoothGatt for connection.");
-            if (mBluetoothGatt.connect()) {
-                mConnectionState = STATE_CONNECTING;
-                return true;
-            } else {
-                return false;
-            }
+            return mBluetoothGatt.connect();
         }
 
         final BluetoothDevice device = mBluetoothAdapter.getRemoteDevice(address);
@@ -334,7 +327,6 @@ public class UartService extends Service {
         mBluetoothGatt = device.connectGatt(this, false, mGattCallback);
         Log.d(TAG, "Trying to create a new connection.");
         mBluetoothDeviceAddress = address;
-        mConnectionState = STATE_CONNECTING;
         return true;
     }
 
@@ -359,7 +351,7 @@ public class UartService extends Service {
      * After using a given BLE device, the app must call this method to ensure resources are
      * released properly.
      */
-    public void close() {
+    private void close() {
         if (mBluetoothGatt == null) {
             return;
         }
@@ -412,13 +404,11 @@ public class UartService extends Service {
     /**
      * 数据通知
      * Enable TXNotification
-     *
-     * @return
      */
     public void enableTXNotification() {
 
         if (mBluetoothGatt == null) {
-            showMessage("mBluetoothGatt null" + mBluetoothGatt);
+            showMessage("mBluetoothGatt null");
             broadcastUpdate(DEVICE_DOES_NOT_SUPPORT_UART);
             return;
         }
@@ -447,7 +437,7 @@ public class UartService extends Service {
     /**
      * 发送数据
      *
-     * @param value
+     * @param value value
      */
     public void writeRXCharacteristic(byte[] value) {
 
@@ -485,7 +475,7 @@ public class UartService extends Service {
     /**
      * 打印日志
      *
-     * @param msg
+     * @param msg msg
      */
     private void showMessage(String msg) {
         Log.e(TAG, msg);

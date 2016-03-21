@@ -39,7 +39,6 @@ public class ChooseActivity extends Activity {
         title.setOnClickListener(new OnClickListener());
         isTrue.setOnClickListener(new OnClickListener());
         isFalse.setOnClickListener(new OnClickListener());
-        //TODO  myDate 更新
         try {
             sharedPreferences = this.getSharedPreferences("myDate",
                     Context.MODE_PRIVATE);
@@ -65,7 +64,7 @@ public class ChooseActivity extends Activity {
         overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
     }
 
-    public class OnClickListener implements View.OnClickListener {
+    private class OnClickListener implements View.OnClickListener {
 
         @Override
         public void onClick(View v) {

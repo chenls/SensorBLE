@@ -40,10 +40,6 @@
             android:label="@string/title_activity_choose"
             android:theme="@style/DialogLight" />
         <activity
-            android:name="com.cqupt.sensor_ble.Input"
-            android:label="@string/title_activity_input"
-            android:theme="@style/DialogLight" />
-        <activity
             android:name=".activity.AboutActivity"
             android:label="@string/title_activity_about_sl"
             android:theme="@style/DialogLight"/>

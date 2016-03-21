@@ -32,7 +32,6 @@
         <!-- All customizations that are NOT specific to a particular API-level can go here. -->
     </style>
 
-    <color name="black">#FF000000</color>
     <color name="white_grey">#FFF2F2F2</color>
     <!-- AlertDialog text color fix thanks to Shawn Castrianni, see: http://groups.google.com/group/android-developers/browse_thread/thread/f0b34621d3a70c4b -->
     <style name="DialogLight" parent="@android:style/Theme.Dialog">
@@ -40,15 +39,7 @@
         <item name="android:windowBackground">@color/white_grey</item>
     </style>
 
-    <style name="Theme.Timetodo" parent="@android:style/Theme.NoTitleBar"></style>
+    <style name="Theme.Timetodo" parent="@android:style/Theme.NoTitleBar"/>
 
-    <style name="dial_btn_style">
-        <item name="android:layout_height">wrap_content</item>
-        <item name="android:layout_width">wrap_content</item>
-        <item name="android:background">@drawable/phone_button_selector</item>
-        <item name="android:textColor">@color/white_grey</item>
-        <item name="android:textSize">40sp</item>
-
-    </style>
 
 </resources>

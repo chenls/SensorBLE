@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<selector xmlns:android="http://schemas.android.com/apk/res/android">/
-    <item android:state_pressed="true">//定义当button 处于pressed 状态时的形态。
-        <shape>
-            <gradient android:endColor="@color/line_gray" />
-            <corners android:radius="5dp" />
-        </shape>
-    </item>
-</selector>   

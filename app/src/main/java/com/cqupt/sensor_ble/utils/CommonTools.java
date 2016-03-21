@@ -1,5 +1,6 @@
 package com.cqupt.sensor_ble.utils;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -20,7 +21,7 @@ public class CommonTools {
     public static void showShortToast(Context context, String message) {
         LayoutInflater inflater = (LayoutInflater) context
                 .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        View view = inflater.inflate(R.layout.custom_toast, null);
+        @SuppressLint("InflateParams") View view = inflater.inflate(R.layout.custom_toast, null);
         TextView text = (TextView) view.findViewById(R.id.toast_message);
         text.setText(message);
         Toast toast = new Toast(context);

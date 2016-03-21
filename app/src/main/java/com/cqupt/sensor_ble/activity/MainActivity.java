@@ -25,19 +25,16 @@ import android.widget.TextView;
 import com.cqupt.sensor_ble.R;
 import com.cqupt.sensor_ble.utils.CommonTools;
 
-import java.io.UnsupportedEncodingException;
-import java.util.Arrays;
-
 public class MainActivity extends Activity {
     private static final int REQUEST_CHANGE_NAME = 2;
-    private int TIME = 2000;
-    private TextView step, distance, calorie, tv_bluetooth_name, tv_battery, tv_rssi;
+    private final int TIME = 2000;
+    private TextView illumination, humidity, temperature, tv_bluetooth_name, tv_battery, tv_rssi;
     private Button connect, setting;
     private BluetoothDevice mDevice = null;
     private static final int UART_PROFILE_DISCONNECTED = 21;
     private int mState = UART_PROFILE_DISCONNECTED;
     private UartService mService = null;
-    public static final String TAG = "SmartLock";
+    private static final String TAG = "MainActivity";
     private String deviceAddress;
     private static final int UART_PROFILE_CONNECTED = 20;
     private String rssi;
@@ -59,12 +56,16 @@ public class MainActivity extends Activity {
         mDevice = BluetoothAdapter.getDefaultAdapter().getRemoteDevice(deviceAddress);
         service_init();
         tv_bluetooth_name = (TextView) findViewById(R.id.tv_bluetooth_name);
-        tv_bluetooth_name.setText(getString(R.string.bluetooth_name) + mDevice.getName());
+        if (mDevice.getName() == null || "null".equals(mDevice.getName())) {
+            tv_bluetooth_name.setText(getString(R.string.bluetooth_null));
+        } else {
+            tv_bluetooth_name.setText(getString(R.string.bluetooth_name, mDevice.getName()));
+        }
         tv_battery = (TextView) findViewById(R.id.tv_battery);
-        tv_battery.setText(getString(R.string.battery_value) + "100%");//初始为100%
-        step = (TextView) findViewById(R.id.step);
-        distance = (TextView) findViewById(R.id.distance);
-        calorie = (TextView) findViewById(R.id.calorie);
+        tv_battery.setText(getString(R.string.battery_value, "100%"));//初始为100%
+        illumination = (TextView) findViewById(R.id.illumination);
+        humidity = (TextView) findViewById(R.id.humidity);
+        temperature = (TextView) findViewById(R.id.temperature);
         connect = (Button) findViewById(R.id.connect);
         setting = (Button) findViewById(R.id.setting);
         connect.setOnClickListener(new OnClickListener());
@@ -73,13 +74,13 @@ public class MainActivity extends Activity {
 
     }
 
-    public class OnClickListener implements View.OnClickListener {
+    private class OnClickListener implements View.OnClickListener {
 
         @Override
         public void onClick(View v) {
             if (v == connect) {
                 if (connect.getText().equals(getString(R.string.connect))) {
-                    CommonTools.showShortToast(MainActivity.this, getString(R.string.tryReconnet));
+                    CommonTools.showShortToast(MainActivity.this, getString(R.string.try_re_connect));
                     mService.connect(deviceAddress);
                 } else {
                     if (mDevice != null) {
@@ -108,16 +109,16 @@ public class MainActivity extends Activity {
     /**
      * 发送字符串数据
      */
-    private void sendData(String message) {
-        byte[] value;
-        try {
-            value = message.getBytes("UTF-8");
-            Log.i(TAG, "发送数据为：" + Arrays.toString(value));
-            mService.writeRXCharacteristic(value);
-        } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
-        }
-    }
+//    private void sendData(String message) {
+//        byte[] value;
+//        try {
+//            value = message.getBytes("UTF-8");
+//            Log.i(TAG, "发送数据为：" + Arrays.toString(value));
+//            mService.writeRXCharacteristic(value);
+//        } catch (UnsupportedEncodingException e) {
+//            e.printStackTrace();
+//        }
+//    }
 
     /**
      * 广播接收器
@@ -131,9 +132,14 @@ public class MainActivity extends Activity {
              */
             if (action.equals(UartService.ACTION_GATT_CONNECTED)) {
                 connect.setText(R.string.disconnect);
-                tv_bluetooth_name.setText(getString(R.string.bluetooth_name) + mDevice.getName());
+                if (mDevice.getName() == null || "null".equals(mDevice.getName())) {
+                    tv_bluetooth_name.setText(getString(R.string.bluetooth_null));
+                } else {
+                    tv_bluetooth_name.setText(getString(R.string.bluetooth_name, mDevice.getName()));
+                }
+                tv_battery.setText(getString(R.string.battery_value, "100%"));//初始为100%
                 mState = UART_PROFILE_CONNECTED;
-                tv_rssi.setText(getString(R.string.rssi) + rssi + "dBm");
+                tv_rssi.setText(getString(R.string.rssi, rssi));
             }
             /**
              * 连接断开
@@ -146,29 +152,30 @@ public class MainActivity extends Activity {
                 Log.i(TAG, "连接断开");
                 tv_bluetooth_name.setText(R.string.no_bt);
                 tv_battery.setText(getString(R.string.battery));
-//                step.setBackgroundResource(R.drawable.gray_circle_shape);
-//                step.setText(R.string.bt_disconnect);
                 tv_rssi.setText(R.string.rssi_null);
                 mService.connect(deviceAddress);
                 mState = UART_PROFILE_DISCONNECTED;
+                temperature.setText(getString(R.string.bt_disconnect));
+                humidity.setText("");
+                illumination.setText("");
             }
             /**
              * 获取数据
              */
             if (action.equals(UartService.ACTION_DATA_AVAILABLE)) {
-                final String stepValue = intent.getStringExtra(UartService.EXTRA_DATA);
-                if (!TextUtils.isEmpty(stepValue)) {
-//                    接受到CHAR4的数据
-                    step.setText("步数：" + stepValue);
-                    distance.setText("距离：" + stepValue);
-                    calorie.setText("卡路里：" + 2);
+                final int[] data = intent.getIntArrayExtra(UartService.EXTRA_DATA);
+                if (data != null) {
+                    //接受到CHAR4的数据
+                    humidity.setText(getString(R.string.humidity, data[0]));
+                    temperature.setText(getString(R.string.temperature, data[1]));
+                    illumination.setText(getString(R.string.illumination, data[2]));
                 }
                 //获取RSSI
                 final String rssiStatus = intent.getStringExtra(UartService.RSSI_STATUS);
                 if (!TextUtils.isEmpty(rssiStatus)) {
                     if (rssiStatus.equals("0")) {
                         rssi = intent.getStringExtra(UartService.RSSI);
-                        tv_rssi.setText(getString(R.string.rssi) + rssi + "dBm");
+                        tv_rssi.setText(getString(R.string.rssi, rssi));
                     }
                 }
             }
@@ -176,8 +183,8 @@ public class MainActivity extends Activity {
              * 获取电量
              */
             if (action.equals(UartService.EXTRAS_DEVICE_BATTERY)) {
-                final String txValue = intent.getStringExtra(UartService.EXTRA_DATA);
-                tv_battery.setText(getString(R.string.battery_value) + txValue + "%");
+                final String txValue = intent.getStringExtra(UartService.EXTRA_DATA) + "%";
+                tv_battery.setText(getString(R.string.battery_value, txValue));
             }
             /**
              * 发现服务后 发起获取通知数据的请求
@@ -197,8 +204,8 @@ public class MainActivity extends Activity {
         }
     };
 
-    Handler handler = new Handler();
-    Runnable runnable = new Runnable() {
+    private final Handler handler = new Handler();
+    private final Runnable runnable = new Runnable() {
         @Override
         public void run() {
             // handler自带方法实现定时器
@@ -243,7 +250,7 @@ public class MainActivity extends Activity {
      * 服务中间人
      */
 //UART service connected/disconnected
-    private ServiceConnection mServiceConnection = new ServiceConnection() {
+    private final ServiceConnection mServiceConnection = new ServiceConnection() {
         public void onServiceConnected(ComponentName className, IBinder rawBinder) {
             mService = ((UartService.LocalBinder) rawBinder).getService();
             Log.d(TAG, "onServiceConnected mService= " + mService);
