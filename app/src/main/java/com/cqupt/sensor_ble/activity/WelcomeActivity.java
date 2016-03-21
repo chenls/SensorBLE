@@ -148,12 +148,12 @@ public class WelcomeActivity extends Activity {
             }
         });
         try {
-            sharedPreferences = this.getSharedPreferences("myDate",
+            sharedPreferences = this.getSharedPreferences(MainActivity.MY_DATE,
                     Context.MODE_PRIVATE);
         } catch (Exception e) {
             e.printStackTrace();
         }
-        is_auto_connect = sharedPreferences.getBoolean(ChooseActivity.IS_AUTO_CONNECT, false);
+        is_auto_connect = sharedPreferences.getBoolean(ChooseBooleanActivity.IS_AUTO_CONNECT, false);
         Intent intent = this.getIntent();        //获取已有的intent对象
         Bundle bundle = intent.getExtras();    //获取intent里面的bundle对象
         try {

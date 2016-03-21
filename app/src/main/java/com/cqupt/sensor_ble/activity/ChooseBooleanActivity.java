@@ -13,7 +13,7 @@ import android.widget.TextView;
 
 import com.cqupt.sensor_ble.R;
 
-public class ChooseActivity extends Activity {
+public class ChooseBooleanActivity extends Activity {
     public static final String CHOOSE_RESULT = "result";
     public static final String NO = "no";
     public static final String YES = "yes";
@@ -32,7 +32,7 @@ public class ChooseActivity extends Activity {
             getWindow().addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION);
         }
         requestWindowFeature(Window.FEATURE_NO_TITLE);
-        setContentView(R.layout.activity_choose);
+        setContentView(R.layout.activity_choose_boolean);
         TextView title = (TextView) findViewById(R.id.title);
         isTrue = (TextView) findViewById(R.id.isTrue);
         isFalse = (TextView) findViewById(R.id.isFalse);
@@ -40,7 +40,7 @@ public class ChooseActivity extends Activity {
         isTrue.setOnClickListener(new OnClickListener());
         isFalse.setOnClickListener(new OnClickListener());
         try {
-            sharedPreferences = this.getSharedPreferences("myDate",
+            sharedPreferences = this.getSharedPreferences(MainActivity.MY_DATE,
                     Context.MODE_PRIVATE);
         } catch (Exception e) {
             e.printStackTrace();
@@ -73,24 +73,14 @@ public class ChooseActivity extends Activity {
                 if (v == isTrue) {
                     editor.putBoolean(IS_AUTO_CONNECT, true);
                     editor.putBoolean(IS_MANUAL_SET_NOT_AUTO_CONNECT, false);
-                    finishAndPutData(YES);
                 } else if (v == isFalse) {
                     editor.putBoolean(IS_AUTO_CONNECT, false);
                     editor.putBoolean(IS_MANUAL_SET_NOT_AUTO_CONNECT, true);
-                    finishAndPutData(NO);
                 }
                 editor.apply();
+                finish();
+                overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
             }
         }
-    }
-
-    private void finishAndPutData(String noPsd) {
-        Bundle b = new Bundle();
-        b.putString(CHOOSE_RESULT, noPsd);
-        Intent result = new Intent();
-        result.putExtras(b);
-        setResult(Activity.RESULT_OK, result);
-        finish();
-        overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
     }
 }

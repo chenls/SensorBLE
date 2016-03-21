@@ -28,7 +28,6 @@
     <string name="cancel">取消</string>
     <string name="about_BLE">关于智能家居</string>
     <string name="connect_bluetooth">连接设备</string>
-    <string name="title_activity_welcome">WelcomeActivity</string>
     <string name="bluetooth_close">" 蓝牙:未打开"</string>
     <string name="bluetooth_open">" 蓝牙:已打开"</string>
     <string name="setting">设置</string>
@@ -39,10 +38,7 @@
     <string name="rssi">" Rssi:%sdBm"</string>
     <string name="rssi_null">" Rssi:空"</string>
     <string name="no_bt">" 设备:空"</string>
-    <string name="title_activity_setting">SettingActivity</string>
     <string name="autoConnect">自动连接</string>
-    <string name="title_activity_choose">Choose</string>
-    <string name="title_activity_about_sl">AboutSLActivity</string>
     <string name="about_sl">\t\t系统采用CC2540蓝牙模块作为控制装置的智能部件，采用传感器检测相应环境物理量，通过蓝牙模块将数据传输至手机端，并可以通过手机端对数据进行实时环境监控。</string>
     <string name="isAutoConnect">否</string>
     <string name="yes">是</string>
@@ -56,5 +52,11 @@
     <string name="humidity">湿度:%d%%</string>
     <string name="temperature">温度:%d℃</string>
     <string name="Rssi">"Rssi = %s"</string>
+    <string name="title_temperature">报警温度</string>
+    <string name="temperature_value">%1$d℃~%2$d℃</string>
+    <string name="title_humidity">报警湿度</string>
+    <string name="humidity_value">%1$d%%~%2$d%%</string>
+    <string name="title_illumination">光照设置</string>
+    <string name="threshold_value">阈值</string>
 
 </resources>

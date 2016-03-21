@@ -9,6 +9,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
+import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -21,12 +22,15 @@ import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.cqupt.sensor_ble.R;
 import com.cqupt.sensor_ble.utils.CommonTools;
 
 public class MainActivity extends Activity {
-    private static final int REQUEST_CHANGE_NAME = 2;
+
+    private static final int REQUEST_SETTINGS = 2;
+    public static final String MY_DATE = "myDate";
     private final int TIME = 2000;
     private TextView illumination, humidity, temperature, tv_bluetooth_name, tv_battery, tv_rssi;
     private Button connect, setting;
@@ -39,6 +43,8 @@ public class MainActivity extends Activity {
     private static final int UART_PROFILE_CONNECTED = 20;
     private String rssi;
     private boolean isManualDisconnect;
+    private SharedPreferences sharedPreferences;
+    private int[] preferencesData;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,6 +54,12 @@ public class MainActivity extends Activity {
             getWindow().addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION);
         }
         setContentView(R.layout.activity_main);
+        try {
+            sharedPreferences = this.getSharedPreferences(MainActivity.MY_DATE,
+                    Context.MODE_PRIVATE);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         Intent intent = this.getIntent();        //获取已有的intent对象
         Bundle bundle = intent.getExtras();    //获取intent里面的bundle对象
         deviceAddress = bundle.getString(BluetoothDevice.EXTRA_DEVICE);
@@ -71,7 +83,7 @@ public class MainActivity extends Activity {
         connect.setOnClickListener(new OnClickListener());
         setting.setOnClickListener(new OnClickListener());
         handler.postDelayed(runnable, TIME); //每隔2s执行
-
+        preferencesData = getData(); //读取 preferences 数据
     }
 
     private class OnClickListener implements View.OnClickListener {
@@ -166,9 +178,7 @@ public class MainActivity extends Activity {
                 final int[] data = intent.getIntArrayExtra(UartService.EXTRA_DATA);
                 if (data != null) {
                     //接受到CHAR4的数据
-                    humidity.setText(getString(R.string.humidity, data[0]));
-                    temperature.setText(getString(R.string.temperature, data[1]));
-                    illumination.setText(getString(R.string.illumination, data[2]));
+                    receiverChar4Data(data);
                 }
                 //获取RSSI
                 final String rssiStatus = intent.getStringExtra(UartService.RSSI_STATUS);
@@ -204,6 +214,42 @@ public class MainActivity extends Activity {
         }
     };
 
+    private void receiverChar4Data(int[] data) {
+        humidity.setText(getString(R.string.humidity, data[0]));
+        temperature.setText(getString(R.string.temperature, data[1]));
+        illumination.setText(getString(R.string.illumination, data[2]));
+        //湿度报警
+        if (data[0] < preferencesData[2] || data[0] > preferencesData[3]) {
+            Toast.makeText(MainActivity.this, "湿度报警", Toast.LENGTH_SHORT).show();
+        }
+        //温度报警
+        if (data[1] < preferencesData[0] || data[1] > preferencesData[1]) {
+            Toast.makeText(MainActivity.this, "温度报警", Toast.LENGTH_SHORT).show();
+        }
+        //光照报警（天黑了）
+        if (data[2] < preferencesData[4]) {
+            Toast.makeText(MainActivity.this, "光照报警", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (resultCode == RESULT_OK) {
+            if (requestCode == REQUEST_SETTINGS) {
+                preferencesData = getData(); //设置数据后刷新
+            }
+        }
+    }
+
+    private int[] getData() {
+        int min_T = sharedPreferences.getInt(SettingsActivity.MIN_TEMPERATURE, 18);
+        int max_T = sharedPreferences.getInt(SettingsActivity.MAX_TEMPERATURE, 26);
+        int min_H = sharedPreferences.getInt(SettingsActivity.MIN_HUMIDITY, 30);
+        int max_H = sharedPreferences.getInt(SettingsActivity.MAX_HUMIDITY, 60);
+        int value_I = sharedPreferences.getInt(SettingsActivity.VALUE_ILLUMINATION, 10);
+        return new int[]{min_T, max_T, min_H, max_H, value_I};
+    }
+
     private final Handler handler = new Handler();
     private final Runnable runnable = new Runnable() {
         @Override
@@ -221,7 +267,7 @@ public class MainActivity extends Activity {
 
     private void openSetting() {
         Intent newIntent = new Intent(MainActivity.this, SettingsActivity.class);
-        startActivityForResult(newIntent, REQUEST_CHANGE_NAME);
+        startActivityForResult(newIntent, REQUEST_SETTINGS);
         overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
     }
 

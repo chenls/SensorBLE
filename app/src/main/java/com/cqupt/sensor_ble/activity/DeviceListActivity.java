@@ -101,7 +101,7 @@ public class DeviceListActivity extends Activity {
             }
         });
         try {
-            sharedPreferences = this.getSharedPreferences("myDate",
+            sharedPreferences = this.getSharedPreferences(MainActivity.MY_DATE,
                     Context.MODE_PRIVATE);
         } catch (Exception e) {
             e.printStackTrace();
@@ -230,8 +230,8 @@ public class DeviceListActivity extends Activity {
             SharedPreferences.Editor editor = sharedPreferences.edit();
             editor.putString(DEVICE_ADDRESS, deviceList.get(position).getAddress());
 
-            if (!sharedPreferences.getBoolean(ChooseActivity.IS_MANUAL_SET_NOT_AUTO_CONNECT, false)) {
-                editor.putBoolean(ChooseActivity.IS_AUTO_CONNECT, true);
+            if (!sharedPreferences.getBoolean(ChooseBooleanActivity.IS_MANUAL_SET_NOT_AUTO_CONNECT, false)) {
+                editor.putBoolean(ChooseBooleanActivity.IS_AUTO_CONNECT, true);
             }
 
             editor.apply();
