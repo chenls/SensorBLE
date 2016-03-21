@@ -73,7 +73,7 @@ public class SettingsActivity extends Activity {
         int max_H = sharedPreferences.getInt(MAX_HUMIDITY, 60);
         set_humidity.setText(getString(R.string.humidity_value, min_H, max_H));
 
-        int value_I = sharedPreferences.getInt(VALUE_ILLUMINATION, 10);
+        int value_I = sharedPreferences.getInt(VALUE_ILLUMINATION, 20);
         set_illumination.setText(String.valueOf(value_I));
 
         if (sharedPreferences.getBoolean(ChooseBooleanActivity.IS_AUTO_CONNECT, false)) {

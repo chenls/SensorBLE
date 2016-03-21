@@ -1,6 +1,10 @@
 package com.cqupt.sensor_ble.activity;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.app.Notification;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.content.BroadcastReceiver;
@@ -10,10 +14,12 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.content.SharedPreferences;
+import android.graphics.BitmapFactory;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
+import android.support.v4.app.NotificationCompat;
 import android.support.v4.content.LocalBroadcastManager;
 import android.text.TextUtils;
 import android.util.Log;
@@ -29,7 +35,6 @@ import com.cqupt.sensor_ble.utils.CommonTools;
 
 public class MainActivity extends Activity {
 
-    private static final int REQUEST_SETTINGS = 2;
     public static final String MY_DATE = "myDate";
     private final int TIME = 2000;
     private TextView illumination, humidity, temperature, tv_bluetooth_name, tv_battery, tv_rssi;
@@ -45,7 +50,10 @@ public class MainActivity extends Activity {
     private boolean isManualDisconnect;
     private SharedPreferences sharedPreferences;
     private int[] preferencesData;
+    private Toast toast;
+    private String last_message;
 
+    @SuppressLint("ShowToast")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -83,7 +91,7 @@ public class MainActivity extends Activity {
         connect.setOnClickListener(new OnClickListener());
         setting.setOnClickListener(new OnClickListener());
         handler.postDelayed(runnable, TIME); //每隔2s执行
-        preferencesData = getData(); //读取 preferences 数据
+        toast = Toast.makeText(MainActivity.this, "", Toast.LENGTH_SHORT);
     }
 
     private class OnClickListener implements View.OnClickListener {
@@ -218,27 +226,60 @@ public class MainActivity extends Activity {
         humidity.setText(getString(R.string.humidity, data[0]));
         temperature.setText(getString(R.string.temperature, data[1]));
         illumination.setText(getString(R.string.illumination, data[2]));
+        String message = null;
         //湿度报警
         if (data[0] < preferencesData[2] || data[0] > preferencesData[3]) {
-            Toast.makeText(MainActivity.this, "湿度报警", Toast.LENGTH_SHORT).show();
+            message = getString(R.string.title_humidity);
         }
         //温度报警
-        if (data[1] < preferencesData[0] || data[1] > preferencesData[1]) {
-            Toast.makeText(MainActivity.this, "温度报警", Toast.LENGTH_SHORT).show();
+        else if (data[1] < preferencesData[0] || data[1] > preferencesData[1]) {
+            message = getString(R.string.title_temperature);
         }
         //光照报警（天黑了）
-        if (data[2] < preferencesData[4]) {
-            Toast.makeText(MainActivity.this, "光照报警", Toast.LENGTH_SHORT).show();
+        else if (data[2] < preferencesData[4]) {
+            message = getString(R.string.title_illumination);
         }
+        if (TextUtils.isEmpty(message)) {
+            return;
+        } else {
+            if (TextUtils.isEmpty(last_message)) {
+                last_message = message;
+                return;
+            } else {
+                if (!last_message.equals(message)) {
+                    last_message = null;
+                    return;
+                }
+            }
+        }
+        toast.setText(message);
+        toast.show();
+        Intent intent = new Intent(MainActivity.this, MainActivity.class);
+        PendingIntent pendingIntent = PendingIntent.getActivity(MainActivity.this, 0,
+                intent, PendingIntent.FLAG_UPDATE_CURRENT);
+        Notification notification;
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(MainActivity.this)
+                .setContentTitle(getString(R.string.alarm))
+                .setContentText(message)
+                .setSmallIcon(R.mipmap.ic_launcher)
+                .setLargeIcon(BitmapFactory.decodeResource(getResources()
+                        , R.mipmap.ic_launcher))
+                .setContentIntent(pendingIntent);
+        notification = builder.build();
+        notification.flags = Notification.FLAG_AUTO_CANCEL;
+        // 手机振动：
+        notification.defaults |= Notification.DEFAULT_VIBRATE;
+        notification.vibrate = new long[]{0, 100, 200, 300};
+        // 发出提示音
+        notification.defaults |= Notification.DEFAULT_SOUND;
+        NotificationManager notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+        notificationManager.notify(1, notification);
     }
 
     @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (resultCode == RESULT_OK) {
-            if (requestCode == REQUEST_SETTINGS) {
-                preferencesData = getData(); //设置数据后刷新
-            }
-        }
+    protected void onResume() {
+        super.onResume();
+        preferencesData = getData(); //设置数据后刷新
     }
 
     private int[] getData() {
@@ -246,7 +287,7 @@ public class MainActivity extends Activity {
         int max_T = sharedPreferences.getInt(SettingsActivity.MAX_TEMPERATURE, 26);
         int min_H = sharedPreferences.getInt(SettingsActivity.MIN_HUMIDITY, 30);
         int max_H = sharedPreferences.getInt(SettingsActivity.MAX_HUMIDITY, 60);
-        int value_I = sharedPreferences.getInt(SettingsActivity.VALUE_ILLUMINATION, 10);
+        int value_I = sharedPreferences.getInt(SettingsActivity.VALUE_ILLUMINATION, 20);
         return new int[]{min_T, max_T, min_H, max_H, value_I};
     }
 
@@ -267,7 +308,7 @@ public class MainActivity extends Activity {
 
     private void openSetting() {
         Intent newIntent = new Intent(MainActivity.this, SettingsActivity.class);
-        startActivityForResult(newIntent, REQUEST_SETTINGS);
+        startActivity(newIntent);
         overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
     }
 
@@ -278,7 +319,7 @@ public class MainActivity extends Activity {
                 startMain.addCategory(Intent.CATEGORY_HOME);
                 startMain.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 startActivity(startMain);
-                CommonTools.showShortToast(MainActivity.this, getString(R.string.Sign_out));
+                Toast.makeText(MainActivity.this, getString(R.string.Sign_out), Toast.LENGTH_SHORT).show();
             } else {
                 finish();
                 overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);

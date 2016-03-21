@@ -83,7 +83,7 @@ public class SelectActivity extends Activity implements NumberPicker.OnValueChan
                 MIN = SettingsActivity.VALUE_ILLUMINATION;
                 low_numberPicker.setMinValue(0);
                 low_numberPicker.setMaxValue(127);
-                int value_I = sharedPreferences.getInt(SettingsActivity.VALUE_ILLUMINATION, 10);
+                int value_I = sharedPreferences.getInt(SettingsActivity.VALUE_ILLUMINATION, 20);
                 low_numberPicker.setValue(value_I);
                 findViewById(R.id.tv_max).setVisibility(View.GONE);
                 findViewById(R.id.high_numberPicker).setVisibility(View.GONE);

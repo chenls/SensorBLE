@@ -52,11 +52,12 @@
     <string name="humidity">湿度:%d%%</string>
     <string name="temperature">温度:%d℃</string>
     <string name="Rssi">"Rssi = %s"</string>
-    <string name="title_temperature">报警温度</string>
+    <string name="title_temperature">温度报警</string>
     <string name="temperature_value">%1$d℃~%2$d℃</string>
-    <string name="title_humidity">报警湿度</string>
+    <string name="title_humidity">湿度报警</string>
     <string name="humidity_value">%1$d%%~%2$d%%</string>
-    <string name="title_illumination">光照设置</string>
+    <string name="title_illumination">光照报警</string>
     <string name="threshold_value">阈值</string>
+    <string name="alarm">警告！！</string>
 
 </resources>
