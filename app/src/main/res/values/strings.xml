@@ -15,7 +15,7 @@
 -->
 <resources>
 
-    <string name="app_name">智能家居</string>
+    <string name="app_name">环境监控</string>
     <string name="Sign_out">"程序后台运行中\n断开连接后退出"</string>
     <string name="no_device">没有找到任何设备，请重试！</string>
     <string name="select_device">请选择一个设备</string>
