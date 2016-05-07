@@ -26,7 +26,7 @@
     <string name="ble_not_supported">Bluetooth Low Energy not supported</string>
     <string name="scan">扫描</string>
     <string name="cancel">取消</string>
-    <string name="about_BLE">关于智能家居</string>
+    <string name="about_BLE">室外环境监控系统</string>
     <string name="connect_bluetooth">连接设备</string>
     <string name="bluetooth_close">" 蓝牙:未打开"</string>
     <string name="bluetooth_open">" 蓝牙:已打开"</string>
