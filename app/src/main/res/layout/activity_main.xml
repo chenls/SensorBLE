@@ -4,43 +4,58 @@
     android:layout_height="match_parent"
     android:background="@color/light_black">
 
-    <LinearLayout
+    <RelativeLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="90dp"
-        android:orientation="vertical">
+        android:layout_marginTop="90dp">
 
-        <TextView
-            android:id="@+id/tv_bluetooth_name"
+        <ImageView
+            android:id="@+id/cqupt"
+            android:layout_width="50dp"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="20dp"
+            android:src="@mipmap/cqupt" />
+
+        <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:drawableStart="@mipmap/iv_name"
-            android:gravity="center"
-            android:text="@string/no_bt"
-            android:textColor="@color/white"
-            android:textSize="14sp" />
+            android:layout_centerVertical="true"
+            android:layout_toEndOf="@+id/cqupt"
+            android:orientation="vertical">
 
-        <TextView
-            android:id="@+id/tv_battery"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:drawableStart="@mipmap/battery_full"
-            android:gravity="center"
-            android:text="@string/battery"
-            android:textColor="@color/white"
-            android:textSize="14sp" />
+            <TextView
+                android:id="@+id/tv_bluetooth_name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:drawableStart="@mipmap/iv_name"
+                android:gravity="center"
+                android:text="@string/no_bt"
+                android:textColor="@color/white"
+                android:textSize="14sp" />
 
-        <TextView
-            android:id="@+id/tv_rssi"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:drawableStart="@mipmap/iv_rssi"
-            android:gravity="center"
-            android:text="@string/rssi_null"
-            android:textColor="@color/white"
-            android:textSize="14sp" />
-    </LinearLayout>
+            <TextView
+                android:id="@+id/tv_battery"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:drawableStart="@mipmap/battery_full"
+                android:gravity="center"
+                android:text="@string/battery"
+                android:textColor="@color/white"
+                android:textSize="14sp" />
+
+            <TextView
+                android:id="@+id/tv_rssi"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:drawableStart="@mipmap/iv_rssi"
+                android:gravity="center"
+                android:text="@string/rssi_null"
+                android:textColor="@color/white"
+                android:textSize="14sp" />
+        </LinearLayout>
+    </RelativeLayout>
+
 
     <RelativeLayout
         android:layout_width="wrap_content"

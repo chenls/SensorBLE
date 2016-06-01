@@ -79,7 +79,7 @@ public class MainActivity extends Activity {
         if (mDevice.getName() == null || "null".equals(mDevice.getName())) {
             tv_bluetooth_name.setText(getString(R.string.bluetooth_null));
         } else {
-            tv_bluetooth_name.setText(getString(R.string.bluetooth_name, mDevice.getName()));
+            tv_bluetooth_name.setText(getString(R.string.bluetooth_name, "李文玉"));
         }
         tv_battery = (TextView) findViewById(R.id.tv_battery);
         tv_battery.setText(getString(R.string.battery_value, "100%"));//初始为100%
@@ -155,7 +155,7 @@ public class MainActivity extends Activity {
                 if (mDevice.getName() == null || "null".equals(mDevice.getName())) {
                     tv_bluetooth_name.setText(getString(R.string.bluetooth_null));
                 } else {
-                    tv_bluetooth_name.setText(getString(R.string.bluetooth_name, mDevice.getName()));
+                    tv_bluetooth_name.setText(getString(R.string.bluetooth_name, "李文玉"));
                 }
                 tv_battery.setText(getString(R.string.battery_value, "100%"));//初始为100%
                 mState = UART_PROFILE_CONNECTED;
